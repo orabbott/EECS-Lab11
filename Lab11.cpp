@@ -395,14 +395,24 @@ int diagnonal_sum(Matrix matrix) {
 Matrix row_swap(Matrix matrix, int row1, int row2) {
     int n = matrix.size();
     if (row1 >= n || row2 >= n) {
+        cout << "Invalid index." << endl;
         return matrix;
     }
-    Matrix retmatrix = matrix;
+    Matrix retmatrix;
     for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            int val = matrix.get_value(i, j);
-            retmatrix.set_value(i, j, val);
+        LinkedList newRow;
+        int source = i;
+        if (i == row1)  {
+            source = row2;
         }
+        else if (i == row2) { 
+            source = row1;
+        }
+        // Copy the chosen row
+        for (int j = 0; j < n; j++) {
+            newRow.append(matrix.get_value(source, j));
+        }
+        retmatrix.append(newRow);
     }
     LinkedList temprow = retmatrix.get_row(row1);
     retmatrix.set_row(row1, retmatrix.get_row(row2));
@@ -426,16 +436,19 @@ Matrix rotate_matrix(Matrix matrix) {
 
 // Task 6 Function
 Matrix col_swap(Matrix matrix, int col1, int col2) {
+    Matrix retmatrix;
+    for (int i = 0; i < matrix.size(); i++) {
+        LinkedList row;
+        for (int j = 0; j < matrix.size(); j++) {
+            int val = matrix.get_value(i, j);
+            row.append(val);
+        }
+        retmatrix.append(row);
+    }
     int n = matrix.size();
     if (col1 >= n || col2 >= n) {
+        cout << "Invalid index." << endl;
         return matrix;
-    }
-    Matrix retmatrix = matrix;
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            int val = matrix.get_value(i, j);
-            retmatrix.set_value(i, j, val);
-        }
     }
     retmatrix = rotate_matrix(retmatrix);
     LinkedList temprow = retmatrix.get_row(col1);
@@ -449,24 +462,21 @@ Matrix col_swap(Matrix matrix, int col1, int col2) {
 
 // Task 7 Function
 Matrix replace_val(Matrix matrix, int row, int col, int val) {
-    int n = matrix.size();
-    Matrix retmatrix = matrix;
+    Matrix retmatrix;
+    for (int i = 0; i < matrix.size(); i++) {
+        LinkedList row;
+        for (int j = 0; j < matrix.size(); j++) {
+            int myval = matrix.get_value(i, j);
+            row.append(myval);
+        }
+        retmatrix.append(row);
+    }
+    int n = retmatrix.size();
     if (row >= n || col >= n) {
+        cout << "Invalid Index." << endl;
         return matrix;
     }
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            int num = matrix.get_value(i, j);
-            retmatrix.set_value(i, j, num);
-        }
-    }
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            if(i == row && j == col) {
-                retmatrix.set_value(i, j, val);
-            }
-        }
-    }
+    retmatrix.set_value(row, col, val);
     return retmatrix;
 }
 
