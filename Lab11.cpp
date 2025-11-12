@@ -11,7 +11,6 @@ class Node {
         Node(int val = 0) {
             value = val;
         }
-        int value;
         Node* mynext = nullptr;
         int get_value() {
             return value;
@@ -25,12 +24,12 @@ class Node {
         void set_next(Node* nextNode) {
             mynext = nextNode;
         }
+    private:
+        int value;
 };
 
 class LinkedList {
     public:
-        Node* head = nullptr;
-        LinkedList* mynext = nullptr;
         LinkedList* next() {
             return mynext;
         }
@@ -119,12 +118,19 @@ class LinkedList {
                 current = current -> next();
             }
         }
+        Node* get_head() {
+            return head;
+        }
+        void set_head(Node* newhead) {
+            head = newhead;
+        }
     private:
+        Node* head = nullptr;
+        LinkedList* mynext = nullptr;
 };
 
 class Matrix {
     public:
-        LinkedList* head = nullptr;
         int size() {
             int count = 0;
             LinkedList* current = head;
@@ -164,7 +170,7 @@ class Matrix {
                     current = current -> next();
                     myin++;
                 }
-                current->head = listy.head;
+                current->set_head(listy.get_head());
             }
         }
         int get_value(int index1, int index2) {
@@ -237,42 +243,43 @@ class Matrix {
                 current = current -> next();
             }
         }
+
+        Matrix operator+(Matrix matrix2) {
+            Matrix matrix3;
+            for (int i = 0; i < this->size(); i++) {
+                LinkedList row;
+                for (int j = 0; j < this->size(); j++) {
+                    int sum = this->get_value(i, j) + matrix2.get_value(i, j);
+                    row.append(sum);
+                }
+                matrix3.append(row);
+            }
+            return matrix3;
+        }
+        Matrix operator*(Matrix matrix2) {
+            Matrix matrix3;
+            int length = this->size();
+            for (int i = 0; i < length; i++) {
+                LinkedList myline;
+                for (int j = 0; j < length; j++) {
+                    int result = 0;
+                    for (int k = 0; k < length; k++){
+                        if (this->get_value(i,k) && matrix2.get_value(k,j)) {
+                            result += this->get_value(i, k) * matrix2.get_value(k, j);
+                        }
+                    }
+                    myline.append(result);
+                }
+                matrix3.append(myline);
+            } 
+            return matrix3;
+        }
+
     private:
+    LinkedList* head = nullptr;
 };
 
 // Task 1 Function
-// Adds two non-negative decimal integers represented as strings and
-// returns their sum as a string. Inputs must contain only digits (0-9).
-// Examples:
-//   addNumericStrings("123", "456") -> "579"
-//   addNumericStrings("999", "1")   -> "1000"
-// Complexity: O(max(len(a),len(b))).
-static string addNumericStrings(const string &a, const string &b) {
-    int i = (int)a.size() - 1;
-    int j = (int)b.size() - 1;
-    int carry = 0;
-    string result;
-    result.reserve(max(a.size(), b.size()) + 1);
-
-    while (i >= 0 || j >= 0 || carry) {
-        int da = 0;
-        if (i >= 0) da = a[i] - '0';
-        int db = 0;
-        if (j >= 0) db = b[j] - '0';
-        int sum = da + db + carry;
-        result.push_back(char('0' + (sum % 10)));
-        carry = sum / 10;
-        --i; --j;
-    }
-
-    reverse(result.begin(), result.end());
-
-    // strip leading zeros (but leave a single '0' if result is zero)
-    size_t pos = result.find_first_not_of('0');
-    if (pos == string::npos) return string("0");
-    return result.substr(pos);
-}
-
 vector<Matrix> get_matrices() {
     string filename;
     cout << "Enter a file name: ";
@@ -343,20 +350,6 @@ void print_matrix(Matrix matrix) {
         cout << endl;
     }
     cout << endl;
-}
-
-// Task 2 Function
-Matrix add_matrix(Matrix matrix1, Matrix matrix2) {
-    Matrix matrix3;
-    for (int i = 0; i < matrix1.size(); i++) {
-        LinkedList row;
-        for (int j = 0; j < matrix1.size(); j++) {
-            int sum = matrix1.get_value(i, j) + matrix2.get_value(i, j);
-            row.append(sum);
-        }
-        matrix3.append(row);
-    }
-    return matrix3;
 }
 
 // Task 3 Function
@@ -480,7 +473,7 @@ Matrix replace_val(Matrix matrix, int row, int col, int val) {
     return retmatrix;
 }
 
-int main() {
+int main() { 
     // Question 1
     cout << "-----------------------------------------" << endl << endl;
     cout << "Task 1: Read values from file and print as matrices: " << endl;
@@ -495,14 +488,14 @@ int main() {
     
     // Question 2
     cout << "Task 2: Addition Matrix:" << endl;
-    print_matrix(add_matrix(matrix1, matrix2));
+    print_matrix(matrix1 + matrix2);
     cout << "-----------------------------------------" << endl << endl;
 
     // Question 3
     cout << "Task 3: Multiplication Matrix:" << endl;
     matrix1 = matrices[0];
     matrix2 = matrices[1];
-    print_matrix(multiply_matrix(matrix1, matrix2));
+    print_matrix(matrix1 * matrix2);
     cout << "-----------------------------------------" << endl << endl;
 
 
